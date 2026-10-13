@@ -1,6 +1,7 @@
 package com.smartwaste.smart_waste_backend.service;
 
 import com.smartwaste.smart_waste_backend.entity.Bin;
+import com.smartwaste.smart_waste_backend.dto.LidStatusResponse;
 import com.smartwaste.smart_waste_backend.exception.ResourceNotFoundException;
 import com.smartwaste.smart_waste_backend.repository.BinRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,26 @@ public class BinService {
         return findBin(id);
     }
 
+    @Transactional(readOnly = true)
+    public LidStatusResponse getLidStatus(Long id) {
+        Bin bin = findBin(id);
+        return lidStatus(bin);
+    }
+
+    @Transactional
+    public LidStatusResponse setLidCommand(Long id, String command) {
+        Bin bin = findBin(id);
+        bin.setLidCommand(command);
+        return lidStatus(binRepository.save(bin));
+    }
+
+    @Transactional
+    public LidStatusResponse setLidState(Long id, String state) {
+        Bin bin = findBin(id);
+        bin.setLidState(state);
+        return lidStatus(binRepository.save(bin));
+    }
+
     @Transactional
     public Bin createBin(Bin bin) {
         if (bin.getActive() == null) {
@@ -33,6 +54,12 @@ public class BinService {
         }
         if (bin.getCreatedAt() == null) {
             bin.setCreatedAt(OffsetDateTime.now());
+        }
+        if (bin.getLidState() == null) {
+            bin.setLidState("CLOSED");
+        }
+        if (bin.getLidCommand() == null) {
+            bin.setLidCommand("AUTO");
         }
         return binRepository.save(bin);
     }
@@ -61,5 +88,9 @@ public class BinService {
     private Bin findBin(Long id) {
         return binRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Bin not found: " + id));
+    }
+
+    private LidStatusResponse lidStatus(Bin bin) {
+        return new LidStatusResponse(bin.getLidState(), bin.getLidCommand());
     }
 }

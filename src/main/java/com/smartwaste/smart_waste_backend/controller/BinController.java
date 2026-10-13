@@ -1,6 +1,9 @@
 package com.smartwaste.smart_waste_backend.controller;
 
 import com.smartwaste.smart_waste_backend.entity.Bin;
+import com.smartwaste.smart_waste_backend.dto.LidCommandRequest;
+import com.smartwaste.smart_waste_backend.dto.LidStateRequest;
+import com.smartwaste.smart_waste_backend.dto.LidStatusResponse;
 import com.smartwaste.smart_waste_backend.service.BinService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +35,23 @@ public class BinController {
     @GetMapping("/{id}")
     public Bin getBinById(@PathVariable Long id) {
         return binService.getBinById(id);
+    }
+
+    @GetMapping("/{id}/lid")
+    public LidStatusResponse getLidStatus(@PathVariable Long id) {
+        return binService.getLidStatus(id);
+    }
+
+    @PutMapping("/{id}/lid/command")
+    public LidStatusResponse setLidCommand(@PathVariable Long id,
+                                           @Valid @RequestBody LidCommandRequest request) {
+        return binService.setLidCommand(id, request.command());
+    }
+
+    @PutMapping("/{id}/lid/state")
+    public LidStatusResponse setLidState(@PathVariable Long id,
+                                         @Valid @RequestBody LidStateRequest request) {
+        return binService.setLidState(id, request.state());
     }
 
     @PostMapping

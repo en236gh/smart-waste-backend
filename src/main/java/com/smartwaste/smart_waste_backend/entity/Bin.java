@@ -47,7 +47,16 @@ public class Bin {
     private Integer capacityLiters;
 
     @Column(nullable = false)
+    @Builder.Default
     private Boolean active = true;
+
+    @Column(name = "lid_state", nullable = false, length = 10)
+    @Builder.Default
+    private String lidState = "CLOSED";
+
+    @Column(name = "lid_command", nullable = false, length = 10)
+    @Builder.Default
+    private String lidCommand = "AUTO";
 
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;
